@@ -1,6 +1,8 @@
 // Who read which secret, and who was denied.
 // Requires the vault's diagnostic setting to use resource-specific tables.
+// Caller is the idtyp claim of the token: "user" for a person, "app" for an application
+// or managed identity.
 AZKVAuditLogs
 | where OperationName in ("SecretGet", "SecretList", "SecretSet", "SecretDelete", "SecretPurge")
-| project TimeGenerated, OperationName, ResultSignature, Identity, CallerIpAddress, RequestUri
-| order by TimeGenerated desc
+| project TimeGenerated, OperationName, ResultSignature, Caller = tostring(Identity.claim.idtyp)
+| order by TimeGenerated asc
